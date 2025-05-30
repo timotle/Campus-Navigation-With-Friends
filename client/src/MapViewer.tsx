@@ -33,7 +33,7 @@ export class MapViewer extends Component<MapProps, MapState> {
     // If the App changed our props, then we should clear the map
     if (oldProps !== this.props) {
       this.setState({
-        hour: undefined, path: undefined, nearby: undefined
+        hour: undefined, path: undefined
       });
     }
   };
