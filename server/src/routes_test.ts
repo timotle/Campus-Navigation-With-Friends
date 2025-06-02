@@ -17,7 +17,7 @@ describe('routes', function() {
 
   it('data_schedule', function() {
     const req1 = httpMocks.createRequest(
-        {method: 'GET', url: '/api/userData', query: {}});
+        {method: 'GET', url: '/api/getData', query: {}});
     const res1 = httpMocks.createResponse();
     getUserData(req1, res1);
     assert.deepStrictEqual(res1._getStatusCode(), 400);
@@ -26,23 +26,23 @@ describe('routes', function() {
 
     // Request for schedule not present already should return empty.
     const req2 = httpMocks.createRequest(
-        {method: 'GET', url: '/api/userData', query: {user: "Kevin"}});
+        {method: 'GET', url: '/api/getData', query: {user: "Kevin"}});
     const res2 = httpMocks.createResponse();
     getUserData(req2, res2);
     assert.deepStrictEqual(res2._getStatusCode(), 200);
     assert.deepStrictEqual(res2._getData(), {schedule: []});
 
     const req3 = httpMocks.createRequest(
-        {method: 'POST', url: '/api/userData', body: {}});
+        {method: 'POST', url: '/api/setData', body: {}});
     const res3 = httpMocks.createResponse();
     setUserData(req3, res3);
     assert.deepStrictEqual(res3._getStatusCode(), 400);
     assert.deepStrictEqual(res3._getData(),
             'missing or invalid "user" in POST body');
 
-    // Set the schedule to have two people on it.
+    // Set the schedule for Kevin to have three classes.
     const req5 = httpMocks.createRequest(
-        {method: 'POST', url: '/api/userData',
+        {method: 'POST', url: '/api/setData',
          body: {user: "Kevin", schedule: [
             {hour: "9:30", location: "MLR", desc: "GREEK 101"},
             {hour: "10:30", location: "CS2", desc: "CSE 989"},  // quantum ultra theory
@@ -55,7 +55,7 @@ describe('routes', function() {
 
     // Get schedule again to make sure it was saved.
     const req6 = httpMocks.createRequest(
-        {method: 'GET', url: '/api/userData', query: {user: "Kevin"}});
+        {method: 'GET', url: '/api/getData', query: {user: "Kevin"}});
     const res6 = httpMocks.createResponse();
     getUserData(req6, res6);
     assert.deepStrictEqual(res6._getStatusCode(), 200);
@@ -102,7 +102,7 @@ describe('routes', function() {
     assert.deepStrictEqual(res3._getData(), 'user has no saved schedule');
 
     const req4 = httpMocks.createRequest(
-        {method: 'POST', url: '/api/userData',
+        {method: 'POST', url: '/api/setData',
          body: {user: "Kevin", schedule: [
             {hour: "9:30", location: "MLR", desc: "GREEK 101"},
             {hour: "10:30", location: "CS2", desc: "CSE 989"},
