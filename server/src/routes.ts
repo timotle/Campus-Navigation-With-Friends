@@ -4,8 +4,8 @@ import { BUILDINGS, EDGES, getBuildingByShortName, locationsOnPath } from './cam
 import { findPath } from './pathfinder';
 import { indexAtHour, jsonifySchedule, parseHour, parseSchedule, Schedule } from "./schedule";
 import { Nearby } from "./nearby";
-import { Friends } from "./friends";
-import { buildTree } from "./location_tree";
+// import { Friends } from "./friends";
+import { buildTree, findClosestInTree } from "./location_tree";
 
 // TODO: ADD a data structure, and EDIT route handler functions
 //        as needed to enable server to store friends for each user
@@ -19,11 +19,12 @@ type SafeResponse = Response;  // only writing, so no need to check
 
 // Map from user names to their schedules. Defaults to an empty schedule.
 const allSchedules: Map<string, Schedule> = new Map<string, Schedule>();
-
+const allFriends: Map<string, Set<string>> = new Map();
 
 /** Called from the tests to clear out any data stored during the current test. */
 export const clearDataForTesting = (): void => {
   allSchedules.clear();
+  allFriends.clear();
 }
 
 /** Returns a list of friends and a schedule of the user. */
@@ -37,7 +38,21 @@ export const getUserData = (req: SafeRequest, res: SafeResponse): void => {
   const schedule = allSchedules.get(user);
   const scheduleJson = schedule === undefined ? [] : jsonifySchedule(schedule);
 
-  res.send({schedule: scheduleJson});
+  if (allFriends.has(user)) {
+    let friendsList: string[] = [];
+    const f = allFriends.get(user);
+    if (f !== undefined) {
+      const temp: string[] = [];
+      for (const v of f) {
+        temp.push(v);
+      }
+    friendsList = temp;
+    }
+    res.send({schedule: scheduleJson, friends: friendsList})
+  } else {
+    res.send({schedule: scheduleJson});
+  }
+  
 }
 
 /** Sets the friends list and/or the scheudle for the given user */
@@ -52,6 +67,14 @@ export const setUserData = (req: SafeRequest, res: SafeResponse): void => {
     allSchedules.set(req.body.user, schedule);
   } else {
     res.status(400).send('missing or invalid schedule information');
+  }
+
+  if (req.body.friends !== undefined) {
+    if (!Array.isArray(req.body.friends) || !req.body.friends.every(f => typeof f === "string")) {
+      res.status(400).send('invalid friend list');
+      return;
+    }
+    allFriends.set(req.body.user, new Set(req.body.friends));
   }
 
   res.send({saved: true});
@@ -107,7 +130,9 @@ export const getShortestPath = (req: SafeRequest, res: SafeResponse): void => {
 
   // TODO: initialize with actual list of friends for this user
   //       (feel free to change the type of this variable)
-  const friends: Friends | undefined = [];
+  // const friends: Friends | undefined = [];
+  const friends = allFriends.get(user);
+  // const f: string[] = friends ? Array.from(friends) : [];
 
   // For any friends that are also walking at this time, record the closest
   // point on _this user's path_ to any point on their walk in the nearby list.
@@ -142,9 +167,10 @@ export const getShortestPath = (req: SafeRequest, res: SafeResponse): void => {
       //    (IF there are any locations in friendLocs)
       //  - Then add to nearby with that closest location, distance,
       //    and the current friend
-
-      // Remove, just here to avoid "declared but never read" errors
-      console.log(userLocsTree, friendLocs);
+      if (friendLocs.length > 0) {
+        const [closestLoc, dist] = findClosestInTree(userLocsTree, friendLocs);
+        nearby.push({friend, dist, loc: closestLoc});
+      }
     }
   }
 

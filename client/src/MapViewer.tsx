@@ -18,6 +18,7 @@ type MapProps = {
 type MapState = {
   hour?: Hour;
   path?: Array<Edge>;
+  nearby?: Array<{friend: string, dist: number, loc: {x: number, y: number}}>;
 };
 
 
@@ -147,9 +148,24 @@ export class MapViewer extends Component<MapProps, MapState> {
       ];
 
     // TODO: add circles for each nearby friend in Task 6
+    if (this.state.nearby) {
+      for (const [i, friend] of this.state.nearby.entries()) {
+        elems.push(
+          <circle
+            cx={friend.loc.x}
+            cy={friend.loc.y}
+            fill={FRIEND_COLORS[i % FRIEND_COLORS.length]}
+            r={RADIUS}
+            stroke="white"
+            strokeWidth={10}
+          />
+        )
+      }
+    }
 
-    return elems;
+    return elems
   };
+
 
   /** Returns SVG elements for the edges on the path. */
   renderPath = (): Array<JSX.Element> => {
@@ -187,7 +203,13 @@ export class MapViewer extends Component<MapProps, MapState> {
     items.push(makeLegendItem('blue', `End at ${end.shortName}`, 'end'));
 
     // TODO: add a legend item for each nearby friend in Task 6
-
+    if (this.state.nearby) {
+      for (const [i, friend] of this.state.nearby.entries()) {
+        const col = FRIEND_COLORS[i % FRIEND_COLORS.length];
+        items.push(makeLegendItem(col, `${friend.friend} is close by`, `${friend.friend}`))
+      }
+    }
+    
     return items;
   };
 
@@ -220,11 +242,13 @@ export class MapViewer extends Component<MapProps, MapState> {
       return;
     }
 
-    if (data.found)
-      // TODO: parse & record the nearby points in the state in Task 6
+    if (data.found) {
+      const nearby = Array.isArray(data.nearby) ? data.nearby : [];
       this.setState({
-        path: parseEdges(data.path)
+        path: parseEdges(data.path),
+        nearby: nearby
       });
+    }
   }
 
   doShortestPathError = (msg: string): void => {
@@ -250,6 +274,6 @@ const makeLegendItem = (color: string, desc: string, key: string): JSX.Element =
 
 /** List of colors to use for nearby friends. */
 // TODO: uncomment this in Task 6
-//const FRIEND_COLORS: Array<string> = [
-//    "#F0BC68", "#C4D7D1", "#F5D1C3", "#FFB6A3", "#B8C6D9", "#8596A6",
-//  ];
+const FRIEND_COLORS: Array<string> = [
+   "#F0BC68", "#C4D7D1", "#F5D1C3", "#FFB6A3", "#B8C6D9", "#8596A6",
+ ];

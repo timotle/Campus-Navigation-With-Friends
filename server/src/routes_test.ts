@@ -137,6 +137,31 @@ describe('routes', function() {
     assert.deepStrictEqual(res7._getData().path.length > 0, true);
     assert.deepStrictEqual(res7._getData().nearby, []);
 
+    const reqSetYo = httpMocks.createRequest({
+        method: 'POST', url: '/api/setData', body: {user: "Yo", schedule: [
+            {hour: "9:30", location: "MLR", desc: "GREEK 101"},
+            {hour: "10:30", location: "CS2", desc: "CSE 389"},
+            {hour: "11:30", location: "HUB", desc: "nom nom"},
+        ],
+        friends: ["Gurt"]
+        }
+    });
+    const resSetYo = httpMocks.createResponse();
+    setUserData(reqSetYo, resSetYo);
+    assert.deepStrictEqual(resSetYo._getStatusCode(), 200);
+
+    const reqSetGurt = httpMocks.createRequest({
+        method: 'POST', url: '/api/setData', body: {user: "Gurt", schedule: [
+            {hour: "10:30", location: "MLR", desc: "INFO 200"},
+            {hour: "2:30", location: "SIG", desc: "CSE 331"},
+            {hour: "3:30", location: "CS2", desc: "CSE 332"},
+        ],
+        friends: ["Riel"]
+        }
+    });
+    const resSetGurt = httpMocks.createResponse();
+    setUserData(reqSetGurt, resSetGurt);
+    assert.deepStrictEqual(resSetGurt._getStatusCode(), 200);
     // TODO: improve this test to include "nearby" results in Task 5
   });
 

@@ -6,6 +6,8 @@ import { ScheduleEditor } from './ScheduleEditor';
 import { MapViewer } from './MapViewer';
 import { isRecord } from './record';
 import { EventStart, jsonifySchedule, parseSchedule, Schedule } from './schedule';
+import { Friends, jsonifyFriends, parseFriends } from './friends';
+import { FriendsEditor } from './FriendsEditor';
 
 
 type AppProps = {};  // no props
@@ -15,6 +17,8 @@ type AppState = {
   user?: string;                 // name of this user
   schedule?: Schedule;
   savedSchedule?: Schedule;
+  friends?: Friends;
+  savedFriends?: Friends;
   saved?: boolean;
   show: "log-in" | "edit";         // page displayed
 };
@@ -52,7 +56,13 @@ export class App extends Component<AppProps, AppState> {
           <button onClick={this.doSaveClick}>Save</button>{this.renderSaved()}
           <ScheduleEditor user={this.state.user} buildings={buildings} schedule={this.state.schedule}
             doAddClick={this.doEventAddClick} doRemoveClick={this.doEventRemoveClick}/>
-          {/* TODO: Insert FriendEditor component here */}
+          {<FriendsEditor
+            user={this.state.user}
+            schedule={this.state.schedule}
+            friends={this.state.friends} 
+            setSchedule={(s) => this.setState({schedule: s, saved: false})}
+            setFriends={(f) => this.setState({friends: f, saved: false})}
+            />}
         </div>
         <MapViewer user={this.state.user} buildings={this.state.buildings} schedule={this.state.savedSchedule}/>
       </div>;
@@ -136,7 +146,8 @@ export class App extends Component<AppProps, AppState> {
     }
 
     const schedule = parseSchedule(data.schedule);
-    this.setState({show: "edit", schedule, savedSchedule: schedule});
+    const friends = data.friends ? parseFriends(data.friends) : [];
+    this.setState({show: "edit", schedule, savedSchedule: schedule, friends, savedFriends: friends});
   }
 
   doGetDataError = (msg: string): void => {
@@ -161,12 +172,13 @@ export class App extends Component<AppProps, AppState> {
   }
 
   doSaveClick = (_evt: MouseEvent<HTMLButtonElement>): void => {
-    if (this.state.schedule === undefined)
+    if (this.state.schedule === undefined || this.state.friends === undefined)
       throw new Error('impossible');
 
     const body = {
       user: this.state.user,
-      schedule: jsonifySchedule(this.state.schedule)
+      schedule: jsonifySchedule(this.state.schedule),
+      friends: jsonifyFriends(this.state.friends)
     };
     fetch("/api/setData", {method: 'POST', body: JSON.stringify(body),
         headers: {'Content-Type': 'application/json'}})

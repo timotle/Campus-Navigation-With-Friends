@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import {
-    centroid, distance, sameLocation, squaredDistance
+    centroid, distance, distanceMoreThan, sameLocation, squaredDistance
   } from './locations';
 
 
@@ -60,6 +60,31 @@ describe('locations', function() {
 
   it('distanceMoreThan', function() {
     // TODO: write these in task 3
+    /**
+     * Statement/ Branch Coverage:
+     * 1. no ifs
+     * 2. x < region.x1 only
+     * 3. x < region.x2 only
+     * 4. y < region.y1 only
+     * 5. y < region.y2 only
+     * 
+     * 6. x < region.x1 AND y < region.y1
+     * 7. x < region.x1 AND y < region.y2
+     * 
+     * 8. x < region.x2 AND y < region.y1
+     * 9. x < region.x2 AND y < region.y2
+     */
+    assert.deepStrictEqual(distanceMoreThan({x: 100, y: 100}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), false);
+    assert.deepStrictEqual(distanceMoreThan({x: 17, y: 100}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), true);
+    assert.deepStrictEqual(distanceMoreThan({x: 70, y: 100}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), false);
+    assert.deepStrictEqual(distanceMoreThan({x: 100, y: 19}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), false);
+    assert.deepStrictEqual(distanceMoreThan({x: 100, y: 42}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), true);
+
+    assert.deepStrictEqual(distanceMoreThan({x: 17, y: 19}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), true);
+    assert.deepStrictEqual(distanceMoreThan({x: 17, y: 38}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), true);
+
+    assert.deepStrictEqual(distanceMoreThan({x: 70, y: 19}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), false);
+    assert.deepStrictEqual(distanceMoreThan({x: 70, y: 38}, {x1: 34, y1: 20, x2: 55, y2: 60}, 11), true);
   });
 
 });

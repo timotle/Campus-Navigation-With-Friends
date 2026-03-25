@@ -1,5 +1,7 @@
 import {
-  Location, Region, centroid
+  Location, Region, centroid,
+  distance,
+  distanceMoreThan
 } from "./locations";
 
 
@@ -116,8 +118,45 @@ export const NO_INFO: ClosestInfo = {loc: undefined, dist: Infinity};
 export const closestInTree =
     (tree: LocationTree, loc: Location, bounds: Region, closest: ClosestInfo): ClosestInfo => {
   // TODO: implement in Task 4
+  if (tree.kind === "empty" || distanceMoreThan(loc, bounds, closest.dist)) {
+    return closest;
+  }
 
-  // Remove, just here to avoid "declared but never read" errors
-  console.log(tree, loc, bounds);
+  if (tree.kind === "single") {
+    const d = distance(tree.loc, loc);
+    return d < closest.dist ? {loc: tree.loc, dist: d} : closest;
+  }
+
+  const cx = tree.at.x;
+  const cy = tree.at.y;
+
+  const NW: Region = {x1: bounds.x1, x2: cx, y1: bounds.y1, y2: cy};
+  const NE: Region = {x1: cx, x2: bounds.x2, y1: bounds.y1, y2: cy};
+  const SW: Region = {x1: bounds.x1, x2: cx, y1: cy, y2: bounds.y2};
+  const SE: Region = {x1: cx, x2: bounds.x2, y1: cy, y2: bounds.y2};
+
+  const regions: [LocationTree, Region][] = [
+    [tree.nw, NW],
+    [tree.ne, NE],
+    [tree.sw, SW],
+    [tree.se, SE]
+  ];
+
+  let order: number[] = [];
+  if (loc.x < cx && loc.y < cy) {
+    order = [0, 1, 2, 3];
+  } else if (loc.x >= cx && loc.y < cy) {
+    order = [1, 0, 3, 2];
+  } else if (loc.x < cx && loc.y >= cy) {
+    order = [2, 3, 0, 1];
+  } else {
+    order = [3, 2, 1 ,0];
+  }
+
+  for (const i of order) {
+    const [subtree, subregion] = regions[i];
+    closest = closestInTree(subtree, loc, subregion, closest);
+  }
+
   return closest;
 };

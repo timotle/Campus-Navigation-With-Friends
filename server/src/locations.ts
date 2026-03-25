@@ -68,9 +68,20 @@ export type Region = {x1: number, x2: number, y1: number, y2: number};
  */
 export const distanceMoreThan = (loc: Location, region: Region, dist: number): boolean => {
   // TODO: implement this in Task 3
+  let x: number = loc.x;
+  let y: number = loc.y;
 
-  // Remove, just here to avoid "declared but never read" errors
-  console.log(loc, region, dist);
+  if (x < region.x1) {
+    x = region.x1;
+  } else if (x < region.x2) {
+    x = region.x2;
+  }
 
-  return false;
+  if (y < region.y1) {
+    y = region.y1;
+  } else if (y < region.y2) {
+    y = region.y2;
+  }
+
+  return squaredDistance(loc, {x: x, y: y}) > (dist * dist);
 }
