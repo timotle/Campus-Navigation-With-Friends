@@ -1,11 +1,13 @@
+# Campus Navigation With Friends
+
 **Overview**
-This project is a web app that finds and displays the shortest path between buildings on campus using graph algorithms.
+This is a full-stack web app I built that helps students find the best path across campus while also showing which friends will be nearby based on their schedules.
 
 **Features**
-- Select two buildings on campus
-- Compute shortest path between them
-- Display the route on a map
-- Communicate between frontend and backend using API calls
+- Find shortest paths between campus locations
+- Show routes visually on a map
+- Detect nearby friends walking at the same time
+- Display closest meeting points between users
 
 **Tech Stack**
 - TypeScript
@@ -14,7 +16,7 @@ This project is a web app that finds and displays the shortest path between buil
 - HTML/CSS
 
 **How It Works**
-The user selects two locations, and the frontend sends a request to the backend. The backend runs Dijkstra’s algorithm to compute the shortest path and returns the result to be displayed on the map.
+Users input their class schedule, and the app calculates walking paths between locations. It then compares routes between users and finds the closest points between them using a tree-based algorithm, instead of checking every possible pair.
 
 **How to Run**
 1. Clone the repo  
@@ -24,4 +26,4 @@ The user selects two locations, and the frontend sends a request to the backend.
 5. Open http://localhost:8080  
 
 **What I Learned**
-I learned how Dijkstra’s algorithm works in practice and how to apply it in a real application. I also gained experience building APIs and connecting frontend and backend systems.
+I learned how to build a full-stack app and connect a frontend to a backend. I also implemented a more efficient algorithm to reduce unnecessary comparisons and improved performance.
