@@ -26,4 +26,5 @@ Users input their class schedule, and the app calculates walking paths between l
 5. Open http://localhost:8080  
 
 **What I Learned**
+
 I learned how to build a full-stack app and connect a frontend to a backend. I also implemented a more efficient algorithm to reduce unnecessary comparisons and improved performance.
