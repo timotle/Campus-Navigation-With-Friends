@@ -41,6 +41,13 @@ function createResponse(vercelRes) {
   };
 }
 
+const routeNames = {
+  buildings: "getBuildings",
+  getData: "getUserData",
+  setData: "setUserData",
+  shortestPath: "getShortestPath",
+};
+
 function runRoute(routeName) {
   return (req, res) => {
     const routes = loadRoutes();
@@ -61,4 +68,17 @@ function runRoute(routeName) {
   };
 }
 
-module.exports = { runRoute };
+function runApi(req, res) {
+  const rawUrl = req.url || "";
+  const pathName = rawUrl.split("?")[0].replace(/^\/api\/?/, "");
+  const routeName = routeNames[pathName];
+
+  if (!routeName) {
+    sendResponse(res, 404, "Route not found");
+    return;
+  }
+
+  return runRoute(routeName)(req, res);
+}
+
+module.exports = { runApi, runRoute };

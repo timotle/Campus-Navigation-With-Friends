@@ -1,7 +1,7 @@
 // TODO: Implement FriendsEditor
 import React, { Component } from "react";
-import { Schedule, jsonifySchedule } from "./schedule";
-import { Friends, jsonifyFriends } from "./friends";
+import { Schedule } from "./schedule";
+import { Friends } from "./friends";
 import { USERS } from "./users";
 
 type FriendsProps = {
@@ -62,20 +62,8 @@ export class FriendsEditor extends Component<FriendsProps> {
     doToggleFriendClick = (evt: React.MouseEvent<HTMLButtonElement>): void => {
         const user = evt.currentTarget.value;
         const cur = this.props.friends === undefined ? [] : this.props.friends;
-        const savedSchedule = this.props.schedule === undefined ? [] : this.props.schedule;
         const newFriends = this.doIsFriendClick(user) ? cur.filter((f) => f !== user) : cur.concat([user]);
 
         this.props.setFriends(newFriends);
-        const body ={
-            user: this.props.user,
-            schedule: jsonifySchedule(savedSchedule),
-            friends: jsonifyFriends(newFriends)
-        };
-
-        fetch("/api.setUserData", {
-            method: "POST",
-            headers: {"Content-Type" : "application/json"},
-            body: JSON.stringify(body)
-        }).catch(() => console.error("failed to load user data"))
     }
 }
