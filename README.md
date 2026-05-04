@@ -16,6 +16,7 @@ This is a full-stack web app I built that helps students find the best path acro
 - HTML/CSS
 
 **How It Works**
+
 Users input their class schedule, and the app calculates walking paths between locations. It then compares routes between users and finds the closest points between them using a tree-based algorithm, instead of checking every possible pair.
 
 **How to Run**
