@@ -1,0 +1,8 @@
+{
+  "name": "campus-navigation-with-friends",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "build": "npm install --prefix client && npm run build --prefix client && npm install --prefix server && npm run build --prefix server"
+  }
+}
