@@ -1,6 +1,7 @@
 # Campus Navigation With Friends
 
 **Overview**
+
 This is a full-stack web app I built that helps students find the best path across campus while also showing which friends will be nearby based on their schedules.
 
 **Features**
